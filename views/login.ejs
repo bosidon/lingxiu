@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 - 灵修阅读站</title>
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:linear-gradient(135deg,#1e1b4b,#581c87);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.card{background:white;border-radius:20px;padding:40px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.logo{text-align:center;margin-bottom:24px;}
+.logo .badge{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ec4899);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:24px;margin-bottom:8px;}
+.logo h1{font-size:22px;color:#1f2937;}
+.logo p{font-size:14px;color:#6b7280;margin-top:4px;}
+.input-group{margin-bottom:16px;}
+.input-group label{display:block;font-size:14px;color:#374151;margin-bottom:4px;font-weight:500;}
+.input-group input{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:15px;outline:none;transition:border .2s;}
+.input-group input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12);}
+#error{display:none;background:#fef2f2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:16px;}
+.btn{width:100%;padding:12px;border-radius:10px;border:none;font-size:15px;font-weight:600;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;cursor:pointer;transition:opacity .2s;}
+.btn:hover{opacity:.9;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.switch{text-align:center;margin-top:16px;font-size:14px;color:#6b7280;}
+.switch a{color:#7c3aed;font-weight:600;}
+.spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+</style>
+<link rel="icon" type="image/x-icon" href="/assets/xianbao/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/xianbao/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/xianbao/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/xianbao/favicon-256.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/xianbao/apple-touch-icon.png">
+
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+<div id="xianbao-topbar" data-active="reading"></div>
+<div class="card">
+  <div class="logo">
+    <div class="badge">仙</div>
+    <h1>登录仙宝心灵成长</h1>
+    <p>探索内在世界，点亮心灵之光</p>
+  <div id="error"></div>
+  <form id="loginForm">
+    <div class="input-group">
+      <label>用户名</label>
+      <input type="text" id="username" placeholder="输入用户名" required autocomplete="username">
+    <div class="input-group">
+      <label>密码</label>
+      <input type="password" id="password" placeholder="输入密码" required autocomplete="current-password">
+    <button class="btn" id="loginBtn" type="submit">登录</button>
+  </form>
+  <div class="switch">还没有账号？<a href="/auth/register">立即注册</a></div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var err = document.getElementById('error');
+  var btn = document.getElementById('loginBtn');
+  var username = document.getElementById('username').value.trim();
+  var password = document.getElementById('password').value;
+  
+  err.style.display = 'none';
+  
+  if (!username || !password) {
+    err.textContent = '请填写用户名和密码';
+    err.style.display = 'block';
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = '登录中...';
+  
+  try {
+    var res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, password: password })
+    });
+    
+    if (!res.ok) {
+      err.textContent = '服务器错误 (' + res.status + ')';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '登录';
+      return;
+    }
+    
+    var data = await res.json();
+    
+    if (data.ok) {
+      window.location.href = '/';
+    } else {
+      err.textContent = data.msg || '登录失败';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '登录';
+    }
+  } catch(e) {
+    err.textContent = '网络连接失败，请检查服务是否运行';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '登录';
+  }
+});
+</script>
+<script src="/assets/xianbao/auth-widget.js"></script>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+
+</body>
+</html>

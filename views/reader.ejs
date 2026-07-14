@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= chapter ? chapter.title : book.title %> - 灵修阅读站</title>
+<link href="/fontawesome/css/all.min.css" rel="stylesheet">
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:#f8f5f0;color:#1f2937;padding-top:44px;}
+a{color:#7c3aed;text-decoration:none;}
+
+
+.container{max-width:780px;margin:0 auto;padding:30px 20px 60px;}
+.read-header{margin-bottom:20px;}
+.read-title{font-size:22px;font-weight:700;margin:8px 0 4px;}
+.read-meta{font-size:14px;color:#9ca3af;}
+.read-nav-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:16px;}
+.read-nav-top a{color:#7c3aed;}
+.read-content{background:white;border-radius:12px;padding:32px 36px;margin:20px 0;line-height:2;font-size:16px;color:#374151;}
+.read-content p{margin-bottom:1em;}
+.read-content h1,.read-content h2,.read-content h3,.read-content h4{margin:1.2em 0 .5em;color:#1f2937;}
+.qa-question{background:#f0f4ff;border-left:3px solid #3b82f6;padding:12px 16px;margin:8px 0;border-radius:0 8px 8px 0;}
+.qa-answer{background:#fefce8;border-left:3px solid #f59e0b;padding:12px 16px;margin:8px 0;border-radius:0 8px 8px 0;}
+.read-nav{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:12px;padding:12px 16px;border:1px solid rgba(0,0,0,.04);}
+.read-nav a{font-size:14px;text-decoration:none;}
+.summary-link{text-align:center;margin:16px 0;}
+.btn{display:inline-block;padding:8px 20px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:.2s;}
+.btn-summary{background:#f5f3ff;color:#7c3aed;border:1px solid #e0d5f0;}
+.btn-summary:hover{background:#ede5f9;}
+
+footer{background:#1e1b4b;margin-top:60px;}
+.footer-inner{max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:14px;}
+
+</style>
+<link rel="icon" type="image/x-icon" href="/assets/xianbao/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/xianbao/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/xianbao/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/xianbao/favicon-256.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/xianbao/apple-touch-icon.png">
+
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+</head>
+<body>
+<div id="xianbao-topbar" data-active="reading"></div>
+
+<div class="container">
+  <div class="read-header">
+    <div class="read-nav-top">
+      <a href="/books/<%= book.id %>">← <%= book.title.substring(0,15) %></a>
+      <a href="/books/<%= book.id %>">目录</a>
+    </div>
+    <h1 class="read-title"><%= chapter.title %></h1>
+    <div class="read-meta">第<%= idx+1 %>章 / 共<%= chapters.length %>章 · <%= Math.round(chapter.word_count/100)/10 %>千字</div>
+  </div>
+
+  <% if (summary) { %>
+    <div class="summary-link">
+      <a href="/books/<%= book.id %>/summary/<%= chapter.id %>" class="btn btn-summary"><i class="fas fa-lightbulb"></i> 查看本章精读</a>
+    </div>
+  <% } %>
+
+  <div class="read-content">
+    <%- html %>
+  </div>
+
+  <div class="read-nav">
+    <% if (prev) { %><a href="/books/<%= book.id %>/read/<%= prev.id %>"><i class="fas fa-chevron-left"></i> 上一章</a><% } else { %><span></span><% } %>
+    <a href="/books/<%= book.id %>" style="color:#6b7280;">目录</a>
+    <% if (next) { %><a href="/books/<%= book.id %>/read/<%= next.id %>">下一章 <i class="fas fa-chevron-right"></i></a><% } else { %><span></span><% } %>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 灵修阅读站 · 探索内在世界，点亮心灵之光</p>
+  </div>
+</footer>
+<script src="/assets/xianbao/auth-widget.js"></script>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+
+</body>
+</html>

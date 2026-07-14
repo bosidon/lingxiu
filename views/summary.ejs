@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= chapter.title %>精读 - <%= book.title %> - 灵修阅读站</title>
+<link href="/fontawesome/css/all.min.css" rel="stylesheet">
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:#f8f5f0;color:#1f2937;padding-top:44px;}
+a{color:#7c3aed;text-decoration:none;}
+
+.container{max-width:780px;margin:0 auto;padding:30px 20px 60px;}
+
+.summary-header{margin-bottom:20px;}
+.summary-nav{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:16px;}
+.summary-nav a{color:#7c3aed;}
+.summary-title{font-size:22px;font-weight:700;margin:8px 0 4px;}
+.summary-meta{font-size:14px;color:#9ca3af;}
+
+/* Summary card */
+.summary-card{background:white;border-radius:16px;overflow:hidden;border:1px solid rgba(0,0,0,.04);margin-bottom:20px;}
+.summary-label{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;padding:14px 24px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.summary-body{padding:24px 28px;line-height:1.9;font-size:15px;color:#374151;}
+.summary-body h2{font-size:18px;margin:20px 0 10px;color:#1f2937;}
+.summary-body strong{color:#7c3aed;}
+.summary-body ul{padding-left:20px;margin:8px 0;}
+.summary-body li{margin-bottom:6px;}
+.summary-body p{margin-bottom:1em;text-indent:2em;}
+
+/* Key points */
+.keypoints{background:white;border-radius:12px;border:1px solid rgba(0,0,0,.04);padding:20px 24px;margin-bottom:20px;}
+.keypoints h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:#1f2937;}
+.keypoint-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:14px;line-height:1.5;}
+.keypoint-item:last-child{border:none;}
+.keypoint-icon{width:20px;height:20px;border-radius:50%;background:#f5f3ff;display:flex;align-items:center;justify-content:center;color:#7c3aed;font-size:14px;flex-shrink:0;margin-top:2px;}
+
+/* Actions */
+.summary-actions{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:.2s;}
+.btn:hover{opacity:.85;transform:translateY(-1px);}
+.btn-read{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;}
+.btn-dir{background:white;color:#6b7280;border:1px solid #e5e7eb;}
+
+/* Chapter navigation */
+.ch-nav{display:flex;align-items:center;justify-content:space-between;background:white;border-radius:12px;padding:12px 16px;border:1px solid rgba(0,0,0,.04);}
+.ch-nav a{font-size:14px;text-decoration:none;color:#7c3aed;}
+
+footer{background:#1e1b4b;margin-top:60px;}
+.footer-inner{max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:14px;}
+
+</style>
+<link rel="icon" type="image/x-icon" href="/assets/xianbao/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/xianbao/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/xianbao/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/xianbao/favicon-256.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/xianbao/apple-touch-icon.png">
+
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+</head>
+<body>
+<div id="xianbao-topbar" data-active="reading"></div>

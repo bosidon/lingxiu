@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>书籍管理 - 仙宝心灵成长</title>
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:#f8f5f0;color:#1f2937;padding:80px 20px 40px;max-width:1000px;margin:0 auto;}
+h1{font-size:28px;margin-bottom:24px;}
+.table{width:100%;background:white;border-radius:10px;overflow:hidden;}
+.table th,.table td{padding:10px 14px;text-align:left;border-bottom:1px solid #f3f4f6;font-size:14px;}
+.table th{background:#f9fafb;color:#6b7280;font-weight:500;font-size:14px;}
+.badge{font-size:14px;padding:1px 8px;border-radius:100px;font-weight:600;}
+.free{background:#d1fae5;color:#059669;}
+.vip{background:#fef3c7;color:#d97706;}
+
+
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+</head>
+<body>
+<div id="xianbao-topbar" data-active="reading"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <h1>📚 书籍管理</h1>
+  <a href="/admin" style="color:#7c3aed;font-size:14px;">← 返回</a>
+</div>
+
+<table class="table">
+  <tr><th>ID</th><th>书名</th><th>分类</th><th>字数</th><th>状态</th></tr>
+  <% books.forEach(b => { %>
+    <tr>
+      <td><%= b.id %></td>
+      <td style="font-weight:500;"><%= b.title.substring(0,30) %></td>
+      <td style="color:#6b7280;"><%= b.cname %></td>
+      <td style="color:#6b7280;"><%= Math.round(b.total_chars/10000) %>万</td>
+      <td><span class="badge free">免费</span></td>
+    </tr>
+  <% }) %>
+</table>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+</body>
+</html>

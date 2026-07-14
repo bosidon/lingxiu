@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>词汇解释 - <%= book.title %> - 灵修阅读站</title>
+<link href="/fontawesome/css/all.min.css" rel="stylesheet">
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:#f8f5f0;color:#1f2937;padding-top:44px;}
+a{color:#7c3aed;text-decoration:none;}
+
+
+
+.container{max-width:960px;margin:0 auto;padding:30px 20px 60px;}
+
+/* Header */
+.glossary-header{background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:16px;padding:28px 32px;color:white;margin-bottom:24px;}
+.glossary-header h1{font-size:24px;font-weight:800;margin-bottom:4px;}
+.glossary-header p{font-size:14px;opacity:.7;margin-bottom:16px;}
+.glossary-header .back-link{font-size:14px;color:rgba(255,255,255,.7);text-decoration:none;}
+.glossary-header .back-link:hover{color:white;}
+
+/* Search */
+.search-box{position:relative;max-width:100%;}
+.search-box input{width:100%;padding:10px 16px 10px 40px;border-radius:100px;border:none;font-size:14px;outline:none;background:rgba(255,255,255,.2);color:white;backdrop-filter:blur(4px);}
+.search-box input::placeholder{color:rgba(255,255,255,.5);}
+.search-box input:focus{background:rgba(255,255,255,.3);}
+.search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.5);font-size:14px;}
+
+/* Stats */
+.stats-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-card{background:white;border-radius:10px;padding:12px 18px;border:1px solid rgba(0,0,0,.04);display:flex;align-items:center;gap:10px;}
+.stat-num{font-size:20px;font-weight:800;color:#7c3aed;}
+.stat-label{font-size:14px;color:#6b7280;}
+
+/* Category section */
+.category-section{margin-bottom:28px;}
+.cat-header{display:flex;align-items:center;gap:10px;padding:12px 0 10px;border-bottom:2px solid #ede5f9;margin-bottom:4px;}
+.cat-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;}
+.cat-name{font-size:16px;font-weight:700;color:#1f2937;}
+.cat-count{font-size:14px;color:#9ca3af;}
+
+/* Term card */
+.term-card{background:white;border-radius:12px;border:1px solid rgba(0,0,0,.04);margin-bottom:6px;overflow:hidden;transition:.15s;}
+.term-card:hover{border-color:rgba(124,58,237,.2);}
+.term-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;cursor:pointer;gap:10px;}
+.term-header:hover{background:#faf5ff;}
+.term-name{font-size:15px;font-weight:700;color:#1f2937;}
+.term-toggle{color:#9ca3af;font-size:14px;transition:transform .2s;width:20px;text-align:center;}
+.term-card.open .term-toggle{transform:rotate(180deg);}
+.term-body{display:none;padding:0 18px 16px;font-size:14px;line-height:1.9;color:#4b5563;}
+.term-card.open .term-body{display:block;}
+
+/* Filter tabs */
+.filter-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.filter-tab{padding:6px 14px;border-radius:100px;font-size:14px;border:1px solid #e5e7eb;background:white;color:#6b7280;cursor:pointer;transition:.15s;}
+.filter-tab:hover{border-color:#7c3aed;color:#7c3aed;}
+.filter-tab.active{background:#7c3aed;color:white;border-color:#7c3aed;}
+
+.hidden{display:none!important;}
+
+footer{background:#1e1b4b;margin-top:60px;}
+.footer-inner{max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:14px;}
+
+@media(max-width:768px){
+  .container{padding:20px 14px 40px;}
+  .glossary-header{padding:20px;}
+  .glossary-header h1{font-size:20px;}
+  .stats-row{gap:10px;}
+  .stat-card{padding:10px 14px;}
+  .term-header{padding:10px 14px;}
+  .term-body{padding:0 14px 12px;font-size:14px;}
+}
+
+</style>
+<link rel="icon" type="image/x-icon" href="/assets/xianbao/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/xianbao/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/xianbao/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/xianbao/favicon-256.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/xianbao/apple-touch-icon.png">
+
+</head>
+<body>
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+<div id="xianbao-topbar" data-active="reading"></div>
+
+<div class="container">
+  <!-- Header -->
+  <div class="glossary-header">
+    <a href="/books/<%= book.id %>" class="back-link">← 返回 <%- book.title.substring(0,12) %></a>
+    <h1><i class="fas fa-book"></i> 术语解释</h1>
+    <p>《<%- book.title %>》核心术语汇总，按主题分类整理</p>
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="搜索术语..." oninput="filterTerms()">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-num"><%= terms.length %></span>
+      <span class="stat-label">词条</span>
+    <div class="stat-card">
+      <span class="stat-num"><%=
+        (() => {
+          const cats = {};
+          terms.forEach(t => { if (!cats[t.category]) cats[t.category] = 0; cats[t.category]++; });
+          return Object.keys(cats).length;
+        })()
+      %></span>
+      <span class="stat-label">分类</span>
+
+  <!-- Filter tabs -->
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" onclick="filterByCategory('all')">全部</button>
+    <% 
+      const cats = {};
+      terms.forEach(t => {
+        if (!cats[t.category]) cats[t.category] = 0;
+        cats[t.category]++;
+      });
+      const categories = Object.entries(cats);
+    %>
+    <% categories.forEach(([cat, cnt]) => { %>
+      <button class="filter-tab" onclick="filterByCategory('<%= cat %>')"><%= cat %><span style="font-size:14px;opacity:.6;margin-left:3px;">(<%= cnt %>)</span></button>
+    <% }) %>
+
+  <!-- Grouped terms -->
+  <%
+    const grouped = {};
+    terms.forEach(t => {
+      if (!grouped[t.category]) grouped[t.category] = [];
+      grouped[t.category].push(t);
+    });
+  %>
+  <% Object.entries(grouped).forEach(([cat, catTerms]) => { %>
+    <div class="category-section" data-category="<%= cat %>">
+      <div class="cat-header">
+        <span class="cat-icon"><i class="fas fa-folder"></i></span>
+        <span class="cat-name"><%= cat %></span>
+        <span class="cat-count"><%= catTerms.length %></span>
+      <% catTerms.forEach(t => { %>
+        <div class="term-card" data-term="<%= t.term.toLowerCase() %>">
+          <div class="term-header" onclick="toggleTerm(this)">
+            <span class="term-name"><%= t.term %></span>
+            <span class="term-toggle"><i class="fas fa-chevron-down"></i></span>
+          <div class="term-body"><%= t.explanation %></div>
+      <% }) %>
+  <% }) %>
+
+<script>
+function toggleTerm(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+let currentCategory = 'all';
+
+function filterByCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.filter-tab').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.filter-tab').forEach(el => {
+    if (el.textContent.trim().startsWith(cat === 'all' ? '全部' : cat)) el.classList.add('active');
+  });
+  document.querySelectorAll('.category-section').forEach(el => {
+    if (cat === 'all' || el.dataset.category === cat) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  });
+  // Also apply search filter
+  filterTerms();
+}
+
+function filterTerms() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.term-card').forEach(card => {
+    const term = card.dataset.term;
+    const body = card.querySelector('.term-body').textContent.toLowerCase();
+    const matches = !q || term.includes(q) || body.includes(q);
+    card.classList.toggle('hidden', !matches);
+  });
+
+  // Hide empty categories
+  document.querySelectorAll('.category-section').forEach(section => {
+    const visibleCards = section.querySelectorAll('.term-card:not(.hidden)');
+    section.classList.toggle('hidden', visibleCards.length === 0);
+  });
+
+  // Re-show categories matching current filter if search brings back terms
+  if (currentCategory !== 'all') {
+    filterByCategory(currentCategory);
+    // After applying category filter, re-apply search
+    const q2 = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (q2) {
+      document.querySelectorAll('.category-section').forEach(section => {
+        if (section.classList.contains('hidden')) return;
+        const visible = section.querySelectorAll('.term-card:not(.hidden)');
+        if (visible.length === 0) section.classList.add('hidden');
+      });
+    }
+  }
+}
+</script>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 灵修阅读站 · 探索内在世界，点亮心灵之光</p>
+</footer>
+<script src="/assets/xianbao/auth-widget.js"></script>
+<script>
+
+(function(){
+  var OV="rlOverlay";
+  function showOV(){
+    if(document.getElementById(OV))return;
+    var d=document.createElement("div");
+    d.id=OV;
+    d.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(10,14,26,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;";
+    d.innerHTML='<div style="font-size:48px;margin-bottom:20px;">👤</div><div style="color:#f0f0f0;font-size:22px;font-weight:700;margin-bottom:12px;">请登录后阅读</div><div style="color:#94a3b8;font-size:14px;line-height:1.7;max-width:320px;margin-bottom:28px;">注册并登录即可免费阅读全部书籍<br>升级VIP可无限阅读所有内容</div><button onclick=\"XianbaoAuth.showLogin()\" style=\"padding:12px 36px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;\">登录 / 注册</button><a href=\"/\" style=\"display:inline-block;margin-top:16px;color:#64748b;font-size:14px;text-decoration:none;\">← 返回首页</a>';
+    document.body.appendChild(d);
+  }
+  function hideOV(){var o=document.getElementById(OV);if(o)o.remove()}
+  function chk(t){
+    t=t||30;
+    if(typeof XianbaoAuth==="undefined"){if(t>0)setTimeout(function(){chk(t-1)},200);return}
+    if(!XianbaoAuth.isLoggedIn())showOV();else hideOV()
+  }
+  chk();
+  if(typeof XianbaoAuth!=="undefined"&&XianbaoAuth.onAuthChange){
+    XianbaoAuth.onAuthChange(function(s){if(s.loggedIn)hideOV();else showOV()})
+  }
+})();
+</script>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= book.title %> - 灵修阅读站</title>
+<link href="/fontawesome/css/all.min.css" rel="stylesheet">
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:#f8f5f0;color:#1f2937;padding-top:44px;}
+a{color:#7c3aed;text-decoration:none;}
+
+
+.container{max-width:900px;margin:0 auto;padding:40px 20px 80px;}
+
+/* Book header */
+.book-header{background:white;border-radius:16px;overflow:hidden;border:1px solid rgba(0,0,0,.04);margin-bottom:24px;}
+.book-cover-area{padding:28px 28px 20px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;}
+.book-cover-area .bc-title{font-size:26px;font-weight:800;margin-bottom:4px;}
+.book-cover-area .bc-author{font-size:14px;opacity:.7;margin-bottom:8px;}
+.book-cover-area .bc-meta{display:flex;gap:16px;font-size:14px;opacity:.7;}
+.book-cover-area .bc-desc{font-size:14px;line-height:1.6;opacity:.8;margin-top:12px;}
+.book-body{padding:20px 28px;}
+
+/* Chapter list */
+.section-title{font-size:18px;font-weight:700;margin:28px 0 14px;color:#1f2937;}
+.ch-list{background:white;border-radius:12px;border:1px solid rgba(0,0,0,.04);overflow:hidden;}
+.ch-item{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid #f3f4f6;}
+.ch-item:last-child{border:none;}
+.ch-item:hover{background:#f5f3ff;}
+.ch-num{width:24px;height:24px;border-radius:50%;background:#f3f4f6;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280;margin-right:12px;flex-shrink:0;}
+.ch-title{flex:1;font-size:14px;color:#1f2937;}
+.ch-words{font-size:14px;color:#9ca3af;margin-right:12px;white-space:nowrap;}
+.ch-actions{display:flex;gap:6px;flex-shrink:0;}
+.btn{display:inline-block;padding:5px 12px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;transition:.2s;border:none;cursor:pointer;}
+.btn:hover{opacity:.85;}
+.btn-summary{background:#f5f3ff;color:#7c3aed;}
+.btn-read{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;}
+.btn-small{padding:4px 12px;font-size:14px;}
+
+/* Download section */
+.download-section{background:white;border-radius:12px;border:1px solid rgba(0,0,0,.04);padding:20px 24px;margin-top:28px;}
+.download-section h3{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.download-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;}
+.download-item:last-child{border:none;}
+.download-item .name{font-size:14px;color:#1f2937;}
+.download-item .size{font-size:14px;color:#9ca3af;}
+.btn-download{background:#f0fdf4;color:#059669;padding:5px 14px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;}
+
+/* Related */
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.related-card{background:white;border-radius:10px;padding:14px;border:1px solid rgba(0,0,0,.04);text-decoration:none;color:inherit;transition:.2s;}
+.related-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.06);}
+.related-card .rtitle{font-size:14px;font-weight:600;margin-bottom:4px;}
+.related-card .rinfo{font-size:14px;color:#6b7280;}
+
+.back-link{display:inline-block;font-size:14px;color:#7c3aed;margin-bottom:16px;}
+
+/* 分类树折叠 */
+.hidden{display:none !important;}
+.domain-header:hover{opacity:.9;}
+
+footer{background:#1e1b4b;margin-top:60px;}
+.footer-inner{max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:14px;}
+
+</style>
+<link rel="icon" type="image/x-icon" href="/assets/xianbao/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/xianbao/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/xianbao/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/xianbao/favicon-256.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/xianbao/apple-touch-icon.png">
+
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+</head>
+<body>
+<div id="xianbao-topbar" data-active="reading"></div>
+
+<div class="container">
+  <a href="/books" class="back-link">← 返回资料库</a>
+
+  <!-- Book Header -->
+  <div class="book-header">
+    <div class="book-cover-area">
+      <div class="bc-title"><%= book.title %></div>
+      <div class="bc-author"><%= book.author || '' %></div>
+      <div class="bc-meta">
+        <span><%= book.cname %></span>
+        <span><%= chapters.length %>章</span>
+        <span><%= Math.round(book.total_chars/10000) %>万字</span>
+        <span class="badge" style="font-size:14px;padding:1px 8px;border-radius:100px;font-weight:600;background:rgba(255,255,255,.2);">免费</span>
+      </div>
+      <% if (book.description) { %><div class="bc-desc"><%= book.description %></div><% } %>
+    </div>
+    <div class="book-body">
+      <!-- Big action buttons -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+        <a href="/books/<%= book.id %>/reader" class="btn-big" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none;transition:.2s;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;box-shadow:0 4px 14px rgba(124,58,237,.3);">
+          <span style="font-size:20px;">📖</span> 目录+精读
+        </a>
+        <% if (hasQA && hasQA !== undefined) { %>
+          <a href="/books/<%= book.id %>/qa" class="btn-big" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none;transition:.2s;background:white;color:#7c3aed;border:2px solid #7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.1);">
+            <span style="font-size:20px;">❓</span> 问答
+          </a>
+        <% } %>
+        <% if (hasGlossary && hasGlossary !== undefined) { %>
+          <a href="/books/<%= book.id %>/glossary" class="btn-big" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none;transition:.2s;background:white;color:#7c3aed;border:2px solid #7c3aed;box-shadow:0 2px 8px rgba(124,58,237,.1);">
+            <span style="font-size:20px;">📚</span> 词汇
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapter List -->
+  <h2 class="section-title">📖 目录</h2>
+  <div class="ch-list">
+    <% chapters.forEach((ch, i) => { %>
+      <div class="ch-item">
+        <span class="ch-num"><%= i+1 %></span>
+        <span class="ch-title"><%= ch.title %></span>
+        <span class="ch-words"><%= Math.round(ch.word_count/100)/10 %>千字</span>
+        <div class="ch-actions">
+          <a href="/books/<%= book.id %>/reader#chapter-<%= ch.id %>" class="btn btn-read btn-small" style="background:#f5f3ff;color:#7c3aed;border:1px solid #e0d5f0;">查看 <i class="fas fa-chevron-right"></i></a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- AI Deep Read Section -->
+  <div class="download-section" style="margin-top:28px;">
+    <h3><i class="fas fa-robot"></i> AI助读</h3>
+    <p style="font-size:14px;color:#6b7280;margin:8px 0 14px;line-height:1.6;">
+      基于DeepSeek AI对全书内容的深度分析，涵盖宇宙框架、核心概念、进化路径和实践指导。
+    </p>
+    <% if (hasAIDeepV2) { %>
+      <a href="/books/<%= book.id %>/aideep-v2" class="btn-big" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;transition:.2s;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;box-shadow:0 4px 14px rgba(245,158,11,.3);">
+        <span style="font-size:18px;">🤖</span> 查看AI深度助读
+      </a>
+    <% } else if (hasAIDeepV1) { %>
+      <a href="/books/<%= book.id %>/aideep" class="btn-big" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:700;text-decoration:none;transition:.2s;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;box-shadow:0 4px 14px rgba(245,158,11,.3);">
+        <span style="font-size:18px;">🤖</span> 查看AI助读报告
+      </a>
+    <% } else { %>
+      <span class="btn-big" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:15px;font-weight:700;background:#f3f4f6;color:#9ca3af;cursor:default;">
+        <span style="font-size:18px;">🤖</span> 待生成
+      </span>
+    <% } %>
+  </div>
+
+  <!-- Knowledge Section -->
+  <% if (knowledge) { %>
+    <div class="knowledge-section" style="margin-top:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <h2 class="section-title" style="margin:0;">🗂️ 知识汇编</h2>
+        <span style="font-size:14px;color:#9ca3af;">AI基于精读内容分类重组</span>
+      </div>
+      <p style="font-size:14px;color:#6b7280;margin:4px 0 16px;">
+        将全书精读按主题分类，合并重复内容，保留独特观点，重新组织为连贯的知识笔记。
+      </p>
+
+      <% knowledge.domains.forEach(function(domain) { %>
+        <div class="domain-card" style="background:white;border-radius:14px;border:1px solid rgba(0,0,0,.04);overflow:hidden;margin-bottom:16px;">
+          <div class="domain-header" style="padding:14px 20px;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-bottom:1px solid #e4dff5;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:18px;">📂</span>
+              <span style="font-weight:700;font-size:16px;color:#1f2937;"><%= domain.name %></span>
+              <span style="font-size:14px;color:#7c3aed;background:white;padding:2px 10px;border-radius:100px;font-weight:600;"><%= domain.subtopics.length %>篇笔记</span>
+            </div>
+            <span style="color:#7c3aed;font-size:14px;">▼</span>
+          </div>
+          <div class="domain-body" style="padding:12px 20px 20px;">
+            <% domain.subtopics.forEach(function(subtopic) { %>
+              <div class="subtopic-item" style="margin-top:14px;padding:16px 18px;background:#faf9ff;border-radius:10px;border:1px solid #f0edf8;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                  <span style="font-size:14px;">📌</span>
+                  <span style="font-weight:700;font-size:16px;color:#1f2937;"><%= subtopic.name %></span>
+                  <span style="font-size:14px;color:#6b7280;background:#f3f4f6;padding:1px 8px;border-radius:100px;"><%= subtopic.chapters.length %>章</span>
+                </div>
+
+                <% if (subtopic.note && subtopic.note.length > 0) { %>
+                  <div style="font-size:14px;line-height:1.8;color:#374151;">
+                    <%- subtopic.note.replace(/####/g, '#####') %>
+                  </div>
+                <% } %>
+
+                <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0edf8;">
+                  <div style="font-size:14px;color:#7c3aed;font-weight:600;">
+                    来源章节：<%= (subtopic.chapters || []).join('、') %>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+
+      <div style="text-align:center;margin:20px 0;font-size:14px;color:#9ca3af;">
+        <% var totalChars = 0; var totalNotes = 0; knowledge.domains.forEach(function(d){ d.subtopics.forEach(function(s){ if(s.note) { totalChars += s.note.length; totalNotes++; } }); }); %>
+        共 <%= knowledge.domains.length %> 个领域 · <%= totalNotes %> 篇笔记 · 约 <%= Math.round(totalChars/100)/10 %>千字
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll('.domain-card').forEach(function(card) {
+        var body = card.querySelector('.domain-body');
+        if (body) body.classList.add('hidden');
+      });
+    </script>
+  <% } %>
+
+  <!-- Download Section -->
+  <% if (downloads && downloads.length > 0) { %>
+    <div class="download-section">
+      <h3><i class="fas fa-download"></i> 原文下载</h3>
+      <% downloads.forEach(d => { %>
+        <div class="download-item">
+          <div>
+            <div class="name"><i class="fas fa-file-pdf" style="color:#dc2626;margin-right:6px;"></i> <%= d.file_name %></div>
+            <% if (d.file_size) { %><div class="size"><%= d.file_size %></div><% } %>
+          </div>
+          <% if (d.file_url) { %>
+            <a href="/books/<%= book.id %>/download/<%= d.id %>" class="btn-download" target="_blank"><i class="fas fa-download"></i> 下载</a>
+          <% } else { %>
+            <span class="btn-download" style="opacity:.5;cursor:default;">待上传</span>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <!-- Related Books -->
+  <% if (related && related.length > 0) { %>
+    <h2 class="section-title">📚 同分类推荐</h2>
+    <div class="related-grid">
+      <% related.forEach(r => { %>
+        <a href="/books/<%= r.id %>" class="related-card">
+          <div class="rtitle"><%= r.title %></div>
+          <div class="rinfo"><%= Math.round(r.total_chars/10000) %>万字</div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 灵修阅读站 · 探索内在世界，点亮心灵之光</p>
+  </div>
+</footer>
+<script src="/assets/xianbao/auth-widget.js"></script>
+<script>
+
+(function(){
+  var OV="rlOverlay";
+  function showOV(){
+    if(document.getElementById(OV))return;
+    var d=document.createElement("div");
+    d.id=OV;
+    d.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(10,14,26,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;";
+    d.innerHTML='<div style="font-size:48px;margin-bottom:20px;">👤</div><div style="color:#f0f0f0;font-size:22px;font-weight:700;margin-bottom:12px;">请登录后阅读</div><div style="color:#94a3b8;font-size:14px;line-height:1.7;max-width:320px;margin-bottom:28px;">注册并登录即可免费阅读全部书籍<br>升级VIP可无限阅读所有内容</div><button onclick=\"XianbaoAuth.showLogin()\" style=\"padding:12px 36px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;\">登录 / 注册</button><a href=\"/\" style=\"display:inline-block;margin-top:16px;color:#64748b;font-size:14px;text-decoration:none;\">← 返回首页</a>';
+    document.body.appendChild(d);
+  }
+  function hideOV(){var o=document.getElementById(OV);if(o)o.remove()}
+  function chk(t){
+    t=t||30;
+    if(typeof XianbaoAuth==="undefined"){if(t>0)setTimeout(function(){chk(t-1)},200);return}
+    if(!XianbaoAuth.isLoggedIn())showOV();else hideOV()
+  }
+  chk();
+  if(typeof XianbaoAuth!=="undefined"&&XianbaoAuth.onAuthChange){
+    XianbaoAuth.onAuthChange(function(s){if(s.loggedIn)hideOV();else showOV()})
+  }
+})();
+</script>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+
+</body>
+</html>

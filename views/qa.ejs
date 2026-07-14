@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问答 - <%= book.title %> - 灵修阅读站</title>
+<link href="/fontawesome/css/all.min.css" rel="stylesheet">
+<style>
+@font-face{font-family:'Noto Serif SC';src:url('/assets/xianbao/NotoSerifSC-SemiBold.subset.woff2')format('woff2');font-weight:600;font-display:swap}*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:1rem;h1,h2,h3{font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;font-weight:600}background:#f8f5f0;color:#1f2937;padding-top:44px;}
+a{color:#7c3aed;text-decoration:none;}
+
+
+
+.qa-wrapper{display:flex;height:calc(100vh - 60px);overflow:hidden;}
+
+/* Left panel - question list */
+.qa-sidebar{width:340px;min-width:340px;background:white;border-right:1px solid rgba(0,0,0,.06);overflow-y:auto;}
+.qa-sidebar-header{padding:18px 20px 12px;border-bottom:1px solid #f3f4f6;}
+.qa-sidebar-header h2{font-size:15px;font-weight:700;color:#1f2937;}
+.qa-sidebar-header .back-link{font-size:14px;color:#7c3aed;margin-top:6px;display:inline-block;}
+.qa-sidebar-header .qa-count{font-size:14px;color:#9ca3af;margin-top:4px;}
+.qa-list{flex:1;}
+.qa-item{padding:14px 20px;border-bottom:1px solid #f3f4f6;cursor:pointer;transition:.15s;}
+.qa-item:hover{background:#f5f3ff;}
+.qa-item.active{background:#ede5f9;border-left:3px solid #7c3aed;}
+.qa-item .q-text{font-size:14px;font-weight:600;color:#1f2937;line-height:1.4;}
+.qa-item .q-meta{font-size:14px;color:#9ca3af;margin-top:4px;}
+.qa-item.active .q-text{color:#7c3aed;}
+
+/* Right panel - answer */
+.qa-content{flex:1;overflow-y:auto;padding:28px 32px 60px;max-width:750px;}
+.qa-answer{display:none;}
+.qa-answer.active{display:block;}
+.qa-answer .q-label{font-size:20px;font-weight:700;color:#1f2937;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid #f3f4f6;}
+.qa-answer .q-chapter{display:inline-block;font-size:14px;padding:3px 10px;border-radius:100px;background:#f5f3ff;color:#7c3aed;margin-bottom:12px;}
+.qa-answer .a-content{font-size:15px;line-height:2;color:#374151;}
+.qa-answer .a-content p{margin-bottom:1em;}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;color:#9ca3af;text-align:center;}
+.empty-state i{font-size:48px;margin-bottom:16px;opacity:.5;}
+.empty-state p{font-size:14px;line-height:1.6;}
+.qa-question{background:#f0f4ff;border-left:3px solid #3b82f6;padding:12px 16px;margin:8px 0;border-radius:0 8px 8px 0;}
+.qa-answer{background:#fefce8;border-left:3px solid #f59e0b;padding:12px 16px;margin:8px 0;border-radius:0 8px 8px 0;}
+
+.hamburger{display:none;}
+
+footer{background:#1e1b4b;}
+.footer-inner{max-width:1100px;margin:0 auto;padding:20px;text-align:center;color:rgba(255,255,255,.4);font-size:14px;}
+
+@media(max-width:768px){
+  .qa-sidebar{position:fixed;left:-340px;top:60px;bottom:0;z-index:50;transition:left .3s;box-shadow:4px 0 20px rgba(0,0,0,.1);}
+  .qa-sidebar.open{left:0;}
+  .hamburger{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;background:transparent;font-size:18px;color:#1f2937;cursor:pointer;margin-right:8px;}
+  .overlay{display:none;}
+  .qa-sidebar.open ~ .overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:49;}
+  .qa-content{padding:16px 18px;}
+  .qa-sidebar{width:300px;min-width:300px;}
+  .qa-answer .q-label{font-size:17px;}
+}
+
+</style>
+<link rel="icon" type="image/x-icon" href="/assets/xianbao/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/xianbao/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/xianbao/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/xianbao/favicon-256.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/xianbao/apple-touch-icon.png">
+</head>
+<body>
+
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+<div id="xianbao-topbar" data-active="reading"></div>
+
+<div class="qa-wrapper">
+  <!-- Left panel -->
+  <div class="qa-sidebar" id="qaSidebar">
+    <div class="qa-sidebar-header">
+      <h2><i class="fas fa-question-circle" style="color:#7c3aed;"></i> 常见问题</h2>
+      <a href="/books/<%= book.id %>" class="back-link">← 返回 <%- book.title.substring(0,12) %></a>
+      <div class="qa-count">共 <%= qas.length %> 个问答</div>
+    <div class="qa-list">
+      <% qas.forEach((q, i) => { %>
+        <div class="qa-item<%= i === 0 ? ' active' : '' %>" onclick="showAnswer(<%= i %>)" data-index="<%= i %>">
+          <div class="q-text"><%= q.question %></div>
+          <div class="q-meta"><%= q.chapter_title || '' %></div>
+      <% }) %>
+
+  <div class="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Right panel -->
+  <div class="qa-content" id="qaContent">
+    <% if (qas.length === 0) { %>
+      <div class="empty-state"><i class="fas fa-inbox"></i><p>暂无问答内容</p></div>
+    <% } else { %>
+      <% qas.forEach((q, i) => { %>
+        <div class="qa-answer<%= i === 0 ? ' active' : '' %>" data-index="<%= i %>">
+          <div class="q-chapter"><%= q.chapter_title || '综合' %></div>
+          <div class="q-label"><%= q.question %></div>
+          <div class="a-content">
+            <p><%= q.answer %></p>
+      <% }) %>
+    <% } %>
+
+<script>
+let currentIdx = 0;
+
+function toggleSidebar() {
+  document.getElementById('qaSidebar').classList.toggle('open');
+}
+
+function showAnswer(idx) {
+  currentIdx = idx;
+  document.querySelectorAll('.qa-item').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.qa-item[data-index="${idx}"]`).classList.add('active');
+  document.querySelectorAll('.qa-answer').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.qa-answer[data-index="${idx}"]`).classList.add('active');
+  document.getElementById('qaSidebar').classList.remove('open');
+}
+</script>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 灵修阅读站 · 探索内在世界，点亮心灵之光</p>
+</footer>
+<script src="/assets/xianbao/auth-widget.js"></script>
+<script>
+
+(function(){
+  var OV="rlOverlay";
+  function showOV(){
+    if(document.getElementById(OV))return;
+    var d=document.createElement("div");
+    d.id=OV;
+    d.style.cssText="position:fixed;inset:0;z-index:9999;background:rgba(10,14,26,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;";
+    d.innerHTML='<div style="font-size:48px;margin-bottom:20px;">👤</div><div style="color:#f0f0f0;font-size:22px;font-weight:700;margin-bottom:12px;">请登录后阅读</div><div style="color:#94a3b8;font-size:14px;line-height:1.7;max-width:320px;margin-bottom:28px;">注册并登录即可免费阅读全部书籍<br>升级VIP可无限阅读所有内容</div><button onclick=\"XianbaoAuth.showLogin()\" style=\"padding:12px 36px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:100px;font-size:15px;font-weight:700;cursor:pointer;\">登录 / 注册</button><a href=\"/\" style=\"display:inline-block;margin-top:16px;color:#64748b;font-size:14px;text-decoration:none;\">← 返回首页</a>';
+    document.body.appendChild(d);
+  }
+  function hideOV(){var o=document.getElementById(OV);if(o)o.remove()}
+  function chk(t){
+    t=t||30;
+    if(typeof XianbaoAuth==="undefined"){if(t>0)setTimeout(function(){chk(t-1)},200);return}
+    if(!XianbaoAuth.isLoggedIn())showOV();else hideOV()
+  }
+  chk();
+  if(typeof XianbaoAuth!=="undefined"&&XianbaoAuth.onAuthChange){
+    XianbaoAuth.onAuthChange(function(s){if(s.loggedIn)hideOV();else showOV()})
+  }
+})();
+</script>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+
+</body>
+</html>
