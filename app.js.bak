@@ -72,19 +72,7 @@ app.get('/', (req, res) => {
     c.books = books;
     return books.length > 0;
   });
-    // 每日一语
-  const quotes = [
-    { text: "你即是那源头。你一直在寻找的，就是那个正在寻找的自己。", source: "《一的法则》" },
-    { text: "当下是你所拥有的一切。把注意力放在当下这一刻。", source: "《当下的力量》" },
-    { text: "你创造你的实相。思想是实相的建筑材料。", source: "《赛斯资料》" },
-    { text: "倾听你的感受。它们是灵魂对你说的话。", source: "《欧林-喜悦之道》" },
-    { text: "你的意识创造了你的世界。改变意识，世界随之改变。", source: "《与神对话》" },
-    { text: "静默是通往智慧的桥梁。在安静中，你听到内在的声音。", source: "《克里希那穆提》" },
-    { text: "真正的自由不是选择做什么，而是不再需要选择做什么。", source: "《莱斯特》" },
-    { text: "当你改变看待事物的方式，事物就会改变。", source: "《零极限》" },
-  ];
-  const idx = Math.floor(Math.random() * quotes.length);
-  res.render('index', { stats, cats: catBooks, quote: quotes[idx] });
+  res.render('index', { stats, cats: catBooks });
 });
 
 // ===== BOOKS =====
