@@ -407,7 +407,7 @@ function applyTheme(t){
   document.querySelectorAll('.ch-num').forEach(function(e){e.style.color = t.tx2});
   document.querySelectorAll('.mode-btn.active').forEach(function(e){e.style.color = t.ac});
   document.querySelectorAll('.mode-btn:not(.active)').forEach(function(e){e.style.color = t.tx2});
-  document.querySelectorAll('.content-body h2,.content-body h3').forEach(function(e){e.style.color = t.tx});
+  document.querySelectorAll('.content-body h1,.content-body h2,.content-body h3').forEach(function(e){e.style.color = t.tx});
   document.querySelectorAll('.content-body blockquote').forEach(function(e){e.style.borderLeftColor = t.ac; e.style.color = t.tx2});
   document.querySelectorAll('.kp-item').forEach(function(e){e.style.color = t.tx2});
   document.querySelectorAll('.key-points h4').forEach(function(e){e.style.color = t.ac});
@@ -417,7 +417,10 @@ function applyTheme(t){
 function changeFontSize(delta) {
   currentFs = Math.max(0.75, Math.min(1.5, currentFs + delta * 0.125));
   currentFs = Math.round(currentFs * 100) / 100;
-  document.body.style.setProperty("--reader-fs", currentFs + "rem");
+  var cb = document.getElementById("contentBody");
+  if(cb){cb.style.fontSize = currentFs + "rem";cb.querySelectorAll('h1,h2,h3,p,li,blockquote').forEach(function(e){e.style.fontSize=currentFs+"rem"})}
+  var kp = document.getElementById("keyPointsContainer");
+  if(kp) kp.style.fontSize = currentFs + "rem";
   var fl = document.getElementById("fsLabel");
   if(fl) fl.textContent = currentFs.toFixed(1);
 }

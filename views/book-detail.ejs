@@ -89,7 +89,7 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
 <div id="xianbao-topbar" data-active="reading"></div>
 
 <div class="container">
-  <a href="/books" class="back-link">← 返回资料库</a>
+  <a href="/" class="back-link">← 返回首页</a>
 
   <!-- Book Header -->
   <div class="book-header">
@@ -106,8 +106,8 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
     </div>
     <div class="book-body">
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-        <a href="/books/<%= book.id %>/reader" class="btn-big btn-big-gold">
-          <span style="font-size:1.15rem;">📖</span> 目录+精读
+        <a href="/books/<%= book.id %>/aideep-v2" class="btn-big btn-big-gold">
+          <span style="font-size:1.15rem;">🤖</span> AI助读
         </a>
         <% if (hasQA && hasQA !== undefined) { %>
           <a href="/books/<%= book.id %>/qa" class="btn-big btn-big-outline">
@@ -139,7 +139,7 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
   </div>
 
   <!-- AI Deep Read Section -->
-  <div class="download-section" style="margin-top:28px;">
+  <div class="download-section" style="display:none" style="margin-top:28px;">
     <h3><i class="fas fa-robot"></i> AI助读</h3>
     <p style="font-size:1rem;color:rgba(240,244,255,.5);margin:8px 0 14px;line-height:1.6;">
       基于DeepSeek AI对全书内容的深度分析，涵盖宇宙框架、核心概念、进化路径和实践指导。
