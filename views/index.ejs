@@ -53,7 +53,7 @@ a:hover{opacity:.75;}
   border:1px solid rgba(200,166,92,.3);
   border-radius:100px;
   font-size:0.75rem;letter-spacing:2px;color:#C8A65C;
-  margin-bottom:20px;
+  margin:16px 0;
 }
 .hero h1{
   font-size:2.8rem;font-weight:700;
@@ -88,7 +88,7 @@ a:hover{opacity:.75;}
 .stats{
   position:relative;z-index:1;
   display:flex;gap:1px;
-  margin-top:40px;
+  margin-top:0;
   border-radius:12px;
   overflow:hidden;
   background:rgba(255,255,255,.06);
@@ -117,7 +117,7 @@ a:hover{opacity:.75;}
 /* ===== FEATURED SECTION ===== */
 .section-header{
   display:flex;align-items:center;gap:10px;
-  margin:50px 0 20px;
+  margin:20px 0 20px;
 }
 .section-header .line{flex:1;height:1px;background:linear-gradient(90deg,rgba(200,166,92,.3),transparent);}
 .section-header h2{
@@ -354,7 +354,7 @@ footer .footer-inner a{color:rgba(200,166,92,.4);}
 /* ===== RESPONSIVE ===== */
 @media(max-width:700px){
   .hero h1{font-size:2rem;letter-spacing:4px;}
-  .hero{min-height:420px;padding:60px 16px 20px;}
+  .hero{min-height:420px;padding:60px 16px 0;}
   .stat{padding:12px 18px;min-width:80px;}
   .stat .num{font-size:1.4rem;}
   .featured-grid{grid-template-columns:1fr;}
@@ -379,7 +379,6 @@ footer .footer-inner a{color:rgba(200,166,92,.4);}
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content">
-    <div class="hero-badge">✦ 灵性经典 · 免费阅读</div>
     <h1>灵修阅读站</h1>
     <p class="sub">在文字中照见本心，于静默里遇见真我<br>赛斯 · 欧林 · 与神对话 · <em>一的法则</em> · 克里希那穆提</p>
     <% if (quote) { %>
@@ -388,6 +387,7 @@ footer .footer-inner a{color:rgba(200,166,92,.4);}
       <div class="q-source">—— <%= quote.source %></div>
     </div>
     <% } %>
+    <div class="hero-badge">✨ 灵修经典，ai整理</div>
   </div>
   <div class="stats">
     <div class="stat"><div class="num"><%= stats.books %></div><div class="lbl">部经典</div></div>
