@@ -296,6 +296,7 @@ function loadChapter(chId) {
   var kpc = document.getElementById('keyPointsContainer'); if(kpc) kpc.style.display = 'none';
   showLoading();
   fetchData(chId, currentMode);
+  fetch("/api/reading/progress",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({book_id:<%- book.id %>,chapter_id:chId,progress:0})}).catch(function(){});
 }
 
 function fetchData(chId, mode) {
@@ -456,14 +457,7 @@ fetch("/api/preferences",{credentials:"include"}).then(function(r){return r.json
   var th=d.data.color_theme;
   if(th&&th!=='dark'&&window.setTheme)window.setTheme(th);
 }).catch(function(){});
-
-// Record reading progress
-var pn=location.pathname.match(/\/books\/(\d+)\/reader/);
-var ha=location.hash.match(/chapter-(\d+)/);
-if(pn&&ha){
-  fetch("/api/reading/progress",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({book_id:parseInt(pn[1]),chapter_id:parseInt(ha[1]),progress:0})}).catch(function(){})
-}
-})();
+;
 </script>
 </body>
 </html>
