@@ -211,6 +211,12 @@ function initSchema() {
       FOREIGN KEY (category_id) REFERENCES ai_deep_categories(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS user_preferences (
+    user_id INTEGER PRIMARY KEY,
+    font_size INTEGER DEFAULT 18,
+    color_theme TEXT DEFAULT 'dark',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
     CREATE TABLE IF NOT EXISTS page_views (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       path TEXT NOT NULL,

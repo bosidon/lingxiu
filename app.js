@@ -10,6 +10,7 @@ initialize();
 
 const app = express();
 app.set('view engine', 'ejs');
+app.disable('view cache');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -375,6 +376,81 @@ app.get('/books/:id/aideep-v2', async (req, res) => {
 app.use((err, req, res, next) => {
   console.error('Route error:', req.path, err.message);
   res.status(500).send('500 Error: ' + err.message);
+});
+
+
+// ===== 阅读记录 & 用户偏好 API =====
+app.get('/api/preferences', async (req, res) => {
+  const token = extractToken(req);
+  if (!token) return res.json({ success: false, error: '未登录' });
+  const u = await verifyToken(token);
+  if (!u || !u.success) return res.json({ success: false, error: u.error });
+  try {
+    const db = getDb();
+    let pref = db.prepare('SELECT * FROM user_preferences WHERE user_id = ?').get(u.user.id);
+    if (!pref) {
+      db.prepare('INSERT INTO user_preferences (user_id) VALUES (?)').run(u.user.id);
+      pref = { font_size: 18, color_theme: 'dark' };
+    }
+    res.json({ success: true, data: { font_size: pref.font_size, color_theme: pref.color_theme } });
+  } catch(e) { res.json({ success: false, error: e.message }); }
+});
+
+app.post('/api/preferences', async (req, res) => {
+  const token = extractToken(req);
+  if (!token) return res.json({ success: false, error: '未登录' });
+  const u = await verifyToken(token);
+  if (!u || !u.success) return res.json({ success: false, error: u.error });
+  const { font_size, color_theme } = req.body;
+  try {
+    const db = getDb();
+    db.prepare(`INSERT INTO user_preferences (user_id, font_size, color_theme, updated_at)
+      VALUES (?, ?, ?, datetime('now','localtime'))
+      ON CONFLICT(user_id) DO UPDATE SET font_size=coalesce(?,font_size), color_theme=coalesce(?,color_theme), updated_at=datetime('now','localtime')`)
+      .run(u.user.id, font_size||18, color_theme||'dark', font_size||18, color_theme||'dark');
+    res.json({ success: true });
+  } catch(e) { res.json({ success: false, error: e.message }); }
+});
+
+app.get('/api/reading/history', async (req, res) => {
+  const token = extractToken(req);
+  if (!token) return res.json({ success: false, error: '未登录' });
+  const u = await verifyToken(token);
+  if (!u || !u.success) return res.json({ success: false, error: u.error });
+  try {
+    const db = getDb();
+    const rows = db.prepare(`
+      SELECT rp.book_id, b.title as book_title, rp.chapter_id,
+        rp.updated_at as last_read_at, rp.progress,
+        (SELECT c.title FROM chapters c WHERE c.id = rp.chapter_id) as chapter_title,
+        (SELECT c.sort_order FROM chapters c WHERE c.id = rp.chapter_id) as chapter_index
+      FROM reading_progress rp
+      JOIN books b ON b.id = rp.book_id
+      WHERE rp.user_id = ?
+      ORDER BY rp.updated_at DESC
+      LIMIT 20
+    `).all(u.user.id);
+    res.json({ success: true, data: rows });
+  } catch(e) { res.json({ success: false, error: e.message }); }
+});
+
+app.post('/api/reading/progress', async (req, res) => {
+  const token = extractToken(req);
+  if (!token) return res.json({ success: false, error: '未登录' });
+  const u = await verifyToken(token);
+  if (!u || !u.success) return res.json({ success: false, error: u.error });
+  const { book_id, chapter_id, progress } = req.body;
+  if (!book_id || !chapter_id) return res.json({ success: false, error: '缺少参数' });
+  try {
+    const db = getDb();
+    db.prepare(`
+      INSERT INTO reading_progress (user_id, book_id, chapter_id, progress, updated_at)
+      VALUES (?, ?, ?, ?, datetime('now','localtime'))
+      ON CONFLICT(user_id, book_id) DO UPDATE SET
+        chapter_id=?, progress=coalesce(?,progress), updated_at=datetime('now','localtime')
+    `).run(u.user.id, book_id, chapter_id, progress||0, chapter_id, progress||0);
+    res.json({ success: true });
+  } catch(e) { res.json({ success: false, error: e.message }); }
 });
 
 app.listen(3099, () => console.log('✅ 仙宝: http://localhost:3099'));
