@@ -114,8 +114,8 @@ function initSchema() {
       chapter_id INTEGER,
       progress REAL DEFAULT 0,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (book_id) REFERENCES books(id),
+      
+      
       UNIQUE(user_id, book_id)
     );
 
