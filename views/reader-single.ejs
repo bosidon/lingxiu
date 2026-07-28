@@ -457,7 +457,7 @@ fetch("/api/preferences",{credentials:"include"}).then(function(r){return r.json
   var th=d.data.color_theme;
   if(th&&th!=='dark'&&window.setTheme)window.setTheme(th);
 }).catch(function(){});
-;
+})();
 </script>
 </body>
 </html>
