@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阅读记录 - 灵修阅读站</title>
+<link rel="stylesheet" href="/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;background:#f8f9fb;color:#374151;min-height:100vh;}
+a{color:#7c3aed;text-decoration:none;}
+.container{max-width:700px;margin:0 auto;padding:40px 20px 80px;}
+.history-card{display:block;padding:16px 20px;margin-bottom:10px;background:white;border:1px solid rgba(0,0,0,.04);border-radius:12px;text-decoration:none;transition:.2s;}
+.history-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.06);}
+.history-card .book-title{font-size:1rem;font-weight:600;color:#1f2937;}
+.history-card .chapter{font-size:0.88rem;color:#6b7280;margin-top:4px;}
+.history-card .time{font-size:0.75rem;color:#9ca3af;margin-top:2px;}
+</style>
+</head>
+<body>
+<div id="xianbao-topbar" data-active="reading"></div>
+<div class="container">
+  <h1 style="font-size:1.5rem;font-weight:700;margin-bottom:20px;"><i class="fas fa-book-open"></i> 阅读记录</h1>
+  <div id="historyList"><p style="text-align:center;padding:60px 0;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> 加载中...</p></div>
+</div>
+<footer style="background:#1e1b4b;margin-top:60px;"><div class="footer-inner" style="max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:0.88rem;">© 2026 灵修阅读站</div></footer>
+<script src="/assets/xianbao/auth-widget.js"></script>
+<script src="/assets/xianbao/xianbao-topbar.js"></script>
+<script>
+(function(){
+  function load(){
+    if(!window.XianbaoAuth || !XianbaoAuth.isLoggedIn()){
+      document.getElementById('historyList').innerHTML = '<p style="text-align:center;padding:60px 0;color:#94a3b8;">请先登录</p>';
+      return;
+    }
+    fetch('/api/reading/history',{credentials:'include'}).then(function(r){return r.json()}).then(function(d){
+      var el = document.getElementById('historyList');
+      if(!d.success || !d.data || d.data.length === 0){
+        el.innerHTML = '<p style="text-align:center;padding:60px 0;color:#94a3b8;">还没有阅读记录，去<a href="/books" style="color:#7c3aed;text-decoration:underline;">书库</a>开始阅读吧</p>';
+        return;
+      }
+      var h = '';
+      d.data.forEach(function(r){
+        var ch = r.chapter_index != null ? '第' + (parseInt(r.chapter_index) + 1) + '章' : '';
+        h += '<a class="history-card" href="/books/' + r.book_id + '/reader#chapter-' + r.chapter_id + '">' +
+          '<div class="book-title">' + (r.book_title || '') + '</div>' +
+          '<div class="chapter">' + ch + '</div>' +
+          '<div class="time">' + (r.last_read_at || '') + '</div></a>';
+      });
+      el.innerHTML = h;
+    }).catch(function(){
+      el.innerHTML = '<p style="text-align:center;padding:60px 0;color:#ef4444;">加载失败</p>';
+    });
+  }
+  var iv = setInterval(function(){if(window.XianbaoAuth){clearInterval(iv);load();}},200);
+  setTimeout(function(){clearInterval(iv);},8000);
+})();
+</script>
+</body>
+</html>

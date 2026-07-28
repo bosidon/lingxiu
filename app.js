@@ -89,6 +89,8 @@ app.get('/', (req, res) => {
 });
 
 // ===== BOOKS =====
+app.get('/books/history', (req, res) => { res.render('history'); });
+
 app.get('/books', (req, res) => {
   const db = getDb();
   const cats = db.prepare("SELECT c.* FROM categories c WHERE EXISTS (SELECT 1 FROM books b WHERE b.category_id=c.id AND b.status='published') ORDER BY c.sort_order").all();
