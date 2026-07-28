@@ -431,11 +431,38 @@ function changeFontSize(delta) {
 </script>
 <script>
 (function(){
+// Save preferences API
 function sp(d){fetch("/api/preferences",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)}).catch(function(){})}
-var o=window.changeFontSize;window.changeFontSize=function(d){if(o)o(d);var fl=document.getElementById("fsLabel");if(fl)sp({font_size:Math.round(parseFloat(fl.textContent)*18)});};
-document.querySelectorAll(".theme-btn").forEach(function(b){b.addEventListener("click",function(){sp({color_theme:this.dataset.theme})})});
-fetch("/api/preferences",{credentials:"include"}).then(function(r){return r.json()}).then(function(d){if(!d.success)return;var fl=document.getElementById("fsLabel");if(fl)fl.textContent=(d.data.font_size/18).toFixed(1);var cb=document.getElementById("contentBody");if(cb)cb.style.fontSize=d.data.font_size+"px"}).catch(function(){});
-var pn=location.pathname.match(/\/books\/(\d+)\/reader/);var ha=location.hash.match(/chapter-(\d+)/);if(pn&&ha){fetch("/api/reading/progress",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({book_id:parseInt(pn[1]),chapter_id:parseInt(ha[1]),progress:0})}).catch(function(){})}
+
+// Hook into existing changeFontSize
+var ofs=window.changeFontSize;
+window.changeFontSize=function(d){
+  if(ofs)ofs(d);
+  if(d!==0)sp({font_size:Math.round(window.currentFs*10)});
+};
+
+// Hook into existing setTheme
+var ot=window.setTheme;
+window.setTheme=function(n){
+  if(ot)ot(n);
+  sp({color_theme:n});
+};
+
+// Load saved preferences
+fetch("/api/preferences",{credentials:"include"}).then(function(r){return r.json()}).then(function(d){
+  if(!d.success)return;
+  var fs=d.data.font_size;
+  if(fs&&fs>=7&&fs<=15&&window.currentFs){window.currentFs=fs/10;var fl=document.getElementById("fsLabel");if(fl)fl.textContent=(fs/10).toFixed(1);if(window.changeFontSize)window.changeFontSize(0)}
+  var th=d.data.color_theme;
+  if(th&&th!=='dark'&&window.setTheme)window.setTheme(th);
+}).catch(function(){});
+
+// Record reading progress
+var pn=location.pathname.match(/\/books\/(\d+)\/reader/);
+var ha=location.hash.match(/chapter-(\d+)/);
+if(pn&&ha){
+  fetch("/api/reading/progress",{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({book_id:parseInt(pn[1]),chapter_id:parseInt(ha[1]),progress:0})}).catch(function(){})
+}
 })();
 </script>
 </body>

@@ -404,10 +404,14 @@ app.post('/api/preferences', async (req, res) => {
   const { font_size, color_theme } = req.body;
   try {
     const db = getDb();
+    const existing = db.prepare('SELECT font_size, color_theme FROM user_preferences WHERE user_id = ?').get(u.user.id);
+    const curFs = font_size != null ? font_size : (existing ? existing.font_size : 10);
+    const curCt = color_theme != null ? color_theme : (existing ? existing.color_theme : 'night');
     db.prepare(`INSERT INTO user_preferences (user_id, font_size, color_theme, updated_at)
       VALUES (?, ?, ?, datetime('now','localtime'))
-      ON CONFLICT(user_id) DO UPDATE SET font_size=coalesce(?,font_size), color_theme=coalesce(?,color_theme), updated_at=datetime('now','localtime')`)
-      .run(u.user.id, font_size||18, color_theme||'dark', font_size||18, color_theme||'dark');
+      ON CONFLICT(user_id) DO UPDATE SET
+        font_size=?, color_theme=?, updated_at=datetime('now','localtime')`)
+      .run(u.user.id, curFs, curCt, curFs, curCt);
     res.json({ success: true });
   } catch(e) { res.json({ success: false, error: e.message }); }
 });

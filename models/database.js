@@ -213,7 +213,7 @@ function initSchema() {
 
     CREATE TABLE IF NOT EXISTS user_preferences (
     user_id INTEGER PRIMARY KEY,
-    font_size INTEGER DEFAULT 18,
+    font_size INTEGER DEFAULT 10,
     color_theme TEXT DEFAULT 'dark',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
