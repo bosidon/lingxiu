@@ -95,17 +95,7 @@ function initSchema() {
       last_login DATETIME
     );
 
-    CREATE TABLE IF NOT EXISTS subscriptions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      plan_type TEXT NOT NULL DEFAULT 'monthly',
-      status TEXT DEFAULT 'active',
-      amount_cents INTEGER DEFAULT 0,
-      started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      expires_at DATETIME,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id)
-    );
+
 
     CREATE TABLE IF NOT EXISTS reading_progress (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
