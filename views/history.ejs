@@ -4,51 +4,69 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>阅读记录 - 灵修阅读站</title>
-<link rel="stylesheet" href="/fontawesome/css/all.min.css">
+<link href="/fontawesome/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/xianbao/xianbao-topbar.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;background:#f8f9fb;color:#374151;min-height:100vh;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','PingFang SC','Hiragino Sans GB',sans-serif;font-size:16px;background:#f8f9fb;color:#374151;min-height:100vh;}
 a{color:#7c3aed;text-decoration:none;}
 .container{max-width:700px;margin:0 auto;padding:40px 20px 80px;}
-.card{display:block;padding:16px 20px;margin-bottom:10px;background:white;border:1px solid rgba(0,0,0,.04);border-radius:12px;text-decoration:none;transition:.2s;}
-.card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.06);}
-.ttl{font-size:1rem;font-weight:600;color:#1f2937;}
-.cha{font-size:0.88rem;color:#6b7280;margin-top:4px;}
-.tim{font-size:0.75rem;color:#9ca3af;margin-top:2px;}
+.page-title{font-size:1.8rem;font-weight:700;margin-bottom:8px;}
+.page-sub{font-size:0.88rem;color:#94a3b8;margin-bottom:24px;}
+.card{display:block;background:white;border-radius:12px;padding:18px 20px;margin-bottom:12px;border:1px solid rgba(0,0,0,.04);transition:.2s;text-decoration:none;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.ttl{font-size:1rem;font-weight:600;color:#1f2937;margin-bottom:4px;}
+.ch{font-size:0.88rem;color:#6b7280;margin-bottom:2px;}
+.tm{font-size:0.75rem;color:#9ca3af;}
+.empty{padding:60px 0;text-align:center;color:#94a3b8;}
+footer{background:#1e1b4b;margin-top:60px;}
+.footer-inner{max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:0.88rem;}
+.spinner{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 <div id="xianbao-topbar" data-active="reading"></div>
 <div class="container">
-  <h1 style="font-size:1.5rem;font-weight:700;margin-bottom:20px;"><i class="fas fa-book-open"></i> 阅读记录</h1>
-  <div id="list"><p style="text-align:center;padding:60px 0;color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> 加载中...</p></div>
+  <div class="page-title"><i class="fas fa-book-open" style="margin-right:8px;"></i>阅读记录</div>
+  <div class="page-sub" id="sub">加载中...</div>
+  <div id="list">
+    <div class="empty"><i class="fas fa-spinner spinner" style="margin-right:6px;"></i>加载中...</div>
+  </div>
 </div>
-<footer style="background:#1e1b4b;margin-top:60px;"><div style="max-width:1100px;margin:0 auto;padding:28px 20px;text-align:center;color:rgba(255,255,255,.4);font-size:0.88rem;">&copy; 2026 灵修阅读站</div></footer>
+<footer><div class="footer-inner">&copy; 2026 灵修阅读站</div></footer>
 <script src="/assets/xianbao/auth-widget.js"></script>
 <script src="/assets/xianbao/xianbao-topbar.js"></script>
 <script>
 (function(){
   function load(){
     var el = document.getElementById('list');
+    var sub = document.getElementById('sub');
     if(!window.XianbaoAuth || !XianbaoAuth.isLoggedIn()){
-      el.innerHTML = '<p style="text-align:center;padding:60px 0;color:#94a3b8;">请先登录</p>'; return;
+      el.innerHTML = '<div class="empty">请先登录</div>';
+      sub.textContent = ''; return;
     }
     fetch('/api/reading/history',{credentials:'include'}).then(function(r){return r.json()}).then(function(d){
       if(!d.success || !d.data || !d.data.length){
-        el.innerHTML = '<p style="text-align:center;padding:60px 0;color:#94a3b8;">还没有阅读记录，去<a href="/books" style="color:#7c3aed;text-decoration:underline;">书库</a>开始阅读吧</p>'; return;
+        el.innerHTML = '<div class="empty">还没有阅读记录，去<a href="/books">书库</a>开始阅读吧</div>';
+        sub.textContent = ''; return;
       }
+      sub.textContent = '共 ' + d.data.length + ' 本书';
       el.innerHTML = d.data.map(function(r){
         var ch = r.chapter_index != null ? '第' + (parseInt(r.chapter_index) + 1) + '章' : '';
         return '<a class="card" href="/books/' + r.book_id + '/reader#chapter-' + r.chapter_id + '">' +
           '<div class="ttl">' + (r.book_title || '') + '</div>' +
-          (ch ? '<div class="cha">' + ch + '</div>' : '') +
-          '<div class="tim">' + (r.last_read_at || '') + '</div></a>';
+          (ch ? '<div class="ch">' + ch + '</div>' : '') +
+          '<div class="tm">' + (r.last_read_at || '') + '</div></a>';
       }).join('');
-    }).catch(function(){el.innerHTML = '<p style="text-align:center;padding:60px 0;color:#ef4444;">加载失败</p>';});
+    }).catch(function(){el.innerHTML = '<div class="empty" style="color:#ef4444;">加载失败</div>';});
   }
-  var iv = setInterval(function(){if(window.XianbaoAuth){clearInterval(iv);load();}},200);
-  setTimeout(function(){clearInterval(iv);},8000);
+  var wait = setInterval(function(){
+    if(!window.XianbaoAuth || typeof XianbaoAuth.isLoggedIn != 'function') return;
+    clearInterval(wait);
+    setTimeout(load, 500);
+  }, 200);
+  setTimeout(function(){clearInterval(wait);}, 10000);
 })();
 </script>
 </body>
