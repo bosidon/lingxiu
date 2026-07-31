@@ -37,9 +37,9 @@ h1{font-size:1.8rem;margin-bottom:24px;}
   <div class="card">
     <div style="display:flex;align-items:center;gap:12px;">
       <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#c4b5fd,#a78bfa);display:flex;align-items:center;justify-content:center;color:#5b21b6;font-size:1.15rem;font-weight:700;">
-        <%= (u.nickname||u.username)[0] %>
+        <%= (u.nickname||'?')[0] %>
       <div>
-        <div style="font-weight:600;"><%= u.nickname||u.username %></div>
+        <div style="font-weight:600;"><%= u.nickname||'未知' %></div>
         <div style="font-size:1rem;color:#6b7280;"><%= u.is_vip ? '👑 仙宝心灵成长会员' : '普通用户' %></div>
 
   <% if (!u.is_vip) { %>
