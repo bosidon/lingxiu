@@ -93,7 +93,7 @@ a:hover{opacity:.75;}
 .font-size-controls{display:flex;align-items:center;gap:4px;margin-left:auto;}
 .progress-text{font-size:0.75rem;color:rgba(232,230,240,.35);}
 .fs-btn{width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;color:rgba(232,230,240,.5);font-size:0.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
-.fs-btn:hover{color:#E8E6F0;border-color:rgba(255,255,255,.3);}
+.fs-btn:hover{filter:brightness(1.6);border-color:rgba(255,255,255,.3);}
 .fs-label{font-size:0.75rem;color:rgba(232,230,240,.35);min-width:22px;text-align:center;}
 .mode-btn{
   padding:4px 12px;border-radius:100px;border:none;background:transparent;
@@ -398,6 +398,9 @@ function applyTheme(t){
   document.querySelectorAll('.sidebar-header h2').forEach(function(e){e.style.color = t.tx});
   var ct = document.getElementById('contentTitle');
   if(ct) ct.style.color = t.tx;
+  document.querySelectorAll('.fs-btn').forEach(function(e){e.style.color = t.tx2; e.style.borderColor = t.bd});
+  var fl2 = document.getElementById('fsLabel');
+  if(fl2) fl2.style.color = t.tx2;
   document.querySelectorAll('.ch-num').forEach(function(e){e.style.color = t.tx2});
   document.querySelectorAll('.mode-btn.active').forEach(function(e){e.style.color = t.ac});
   document.querySelectorAll('.mode-btn:not(.active)').forEach(function(e){e.style.color = t.tx2});
