@@ -395,6 +395,9 @@ function applyTheme(t){
   var cb = document.getElementById('contentBody');
   if(cb){cb.style.background = t.cd; cb.style.color = t.tx; cb.style.borderColor = t.bd}
   document.querySelectorAll('.ch-title').forEach(function(e){e.style.color = t.tx});
+  document.querySelectorAll('.sidebar-header h2').forEach(function(e){e.style.color = t.tx});
+  var ct = document.getElementById('contentTitle');
+  if(ct) ct.style.color = t.tx;
   document.querySelectorAll('.ch-num').forEach(function(e){e.style.color = t.tx2});
   document.querySelectorAll('.mode-btn.active').forEach(function(e){e.style.color = t.ac});
   document.querySelectorAll('.mode-btn:not(.active)').forEach(function(e){e.style.color = t.tx2});
