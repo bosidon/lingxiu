@@ -244,7 +244,6 @@ a:hover{opacity:.75;}
       <a href="https://xianbao.online/vip.html" class="upgrade-btn" target="_blank">升级VIP</a>
     </div>
 
-    <div id="keyPointsContainer" style="display:none;"></div>
 
     <div id="contentBody" class="content-body">
       <div class="empty-state" id="welcomeState">
@@ -325,15 +324,6 @@ function fetchData(chId, mode) {
         return;
       } else {
         document.getElementById('usageBanner').style.display = 'none';
-      }
-
-      if (mode === 'summary' && data.keyPoints && data.keyPoints.length > 0) {
-        var kpDiv = document.getElementById('keyPointsContainer');
-        kpDiv.innerHTML = '<div class="key-points"><h4><i class="fas fa-list-check"></i> 核心要点</h4>' +
-          data.keyPoints.map(function(kp) { return '<div class="kp-item"><span class="kp-dot"></span><span>' + kp + '</span></div>'; }).join('') + '</div>';
-        kpDiv.style.display = 'block';
-      } else {
-        var kpc = document.getElementById('keyPointsContainer'); if(kpc) kpc.style.display = 'none';
       }
 
       document.getElementById('contentBody').innerHTML = '<div class="' + (mode === 'reading' ? 'reading-content' : '') + '">' + data.content + '</div>';
