@@ -233,9 +233,9 @@ a:hover{opacity:.75;}
         <button class="fs-btn" onclick="changeFontSize(1)" title="放大字号">A+</button>
       </div>
       <div style="display:flex;align-items:center;gap:4px;margin-left:8px;padding-left:8px;border-left:1px solid rgba(255,255,255,.1)">
-        <button class="theme-btn active" data-theme="night" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;font-size:14px;line-height:1">🌙</button>
-        <button class="theme-btn" data-theme="parchment" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;font-size:14px;line-height:1">📄</button>
-        <button class="theme-btn" data-theme="green" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;font-size:14px;line-height:1">🍃</button>
+        <button class="theme-btn active" data-theme="night" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;font-size:16px;line-height:1">🌙</button>
+        <button class="theme-btn" data-theme="parchment" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;font-size:16px;line-height:1">📜</button>
+        <button class="theme-btn" data-theme="green" style="width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;font-size:16px;line-height:1">🍃</button>
       </div>
     </div>
 
@@ -401,6 +401,12 @@ function applyTheme(t){
   document.querySelectorAll('.fs-btn').forEach(function(e){e.style.color = t.tx2; e.style.borderColor = t.bd});
   var fl2 = document.getElementById('fsLabel');
   if(fl2) fl2.style.color = t.tx2;
+  document.querySelectorAll('.theme-btn').forEach(function(e){
+    var isAct = e.dataset.theme === currentTheme;
+    e.style.borderColor = isAct ? t.ac : t.bd;
+    e.style.background = isAct ? 'rgba(0,0,0,0)' : 'transparent';
+    e.style.boxShadow = isAct ? '0 0 0 2px ' + t.ac + '33' : 'none';
+  });
   document.querySelectorAll('.ch-num').forEach(function(e){e.style.color = t.tx2});
   document.querySelectorAll('.mode-btn.active').forEach(function(e){e.style.color = t.ac});
   document.querySelectorAll('.mode-btn:not(.active)').forEach(function(e){e.style.color = t.tx2});
