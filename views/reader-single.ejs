@@ -400,6 +400,7 @@ function applyTheme(t){
   if(ct) ct.style.color = t.tx;
   document.querySelectorAll('.sidebar').forEach(function(e){e.style.background = t.bg; e.style.borderColor = t.bd});
   document.querySelectorAll('.content-header').forEach(function(e){e.style.background = t.bg});
+  document.querySelectorAll('.hamburger').forEach(function(e){e.style.color = t.tx2});
   document.querySelectorAll('.fs-btn').forEach(function(e){e.style.color = t.tx2; e.style.borderColor = t.bd});
   var fl2 = document.getElementById('fsLabel');
   if(fl2) fl2.style.color = t.tx2;
