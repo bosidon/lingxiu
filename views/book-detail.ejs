@@ -100,7 +100,6 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
         <span><%= book.cname %></span>
         <span><%= chapters.length %>章</span>
         <span><%= Math.round(book.total_chars/10000) %>万字</span>
-        <span style="padding:1px 8px;border-radius:100px;font-size:1rem;font-weight:600;background:rgba(200,166,92,.15);color:#C8A65C;">免费</span>
       </div>
       <% if (book.description) { %><div class="bc-desc"><%= book.description %></div><% } %>
       <div class="bc-actions" style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center">
@@ -109,7 +108,7 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
         <% } else if (hasAIDeepV1) { %>
           <a href="/books/<%= book.id %>/aideep" class="btn-big btn-big-gold" style="padding:10px 18px;font-size:0.95rem">🤖 AI助读</a>
         <% } %>
-        <a href="/books/<%= book.id %>/download-html" class="btn-big btn-big-outline" style="padding:10px 18px;font-size:0.95rem">📥 下载</a>
+        <a href="/books/<%= book.id %>/download-html" class="btn-big btn-big-outline" style="padding:10px 18px;font-size:0.95rem">📥 下载正文</a>
         <a href="/books" class="btn-big btn-big-outline" style="padding:10px 18px;font-size:0.95rem">← 返回首页</a>
       </div>
     </div>
@@ -224,41 +223,6 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
         if (body) body.classList.add('hidden');
       });
     </script>
-  <% } %>
-
-  <!-- Download Section -->
-  <div class="download-section" id="download-section">
-      <h3><i class="fas fa-download"></i> 书籍下载</h3>
-      <div class="download-item">
-        <div>
-          <div class="name"><i class="fas fa-file-code" style="color:#C8A65C;margin-right:6px;"></i> HTML完整版（目录导航，浏览器/手机直接看）</div>
-          <div class="size">含全部章节 · 免费用户下载免费章节</div>
-        </div>
-        <a href="/books/<%= book.id %>/download-html" class="btn-download">下载</a>
-      </div>
-      <div class="download-item">
-        <div>
-          <div class="name"><i class="fas fa-file-alt" style="color:#C8A65C;margin-right:6px;"></i> TXT纯文本版（可导入其他阅读器）</div>
-          <div class="size">纯文本 · 免费用户下载免费章节</div>
-        </div>
-        <a href="/books/<%= book.id %>/download-txt" class="btn-download">下载</a>
-      </div>
-    <% if (downloads && downloads.filter(d => d.file_url).length > 0) { %>
-      <h3 style="margin-top:14px"><i class="fas fa-download"></i> 原文附件</h3>
-      <% downloads.filter(d => d.file_url).forEach(d => { %>
-        <div class="download-item">
-          <div>
-            <div class="name"><i class="fas fa-file-pdf" style="color:#C8A65C;margin-right:6px;"></i> <%= d.file_name %></div>
-            <% if (d.file_size) { %><div class="size"><%= d.file_size %></div><% } %>
-          </div>
-          <% if (d.file_url) { %>
-            <a href="/books/<%= book.id %>/download/<%= d.id %>" class="btn-download" target="_blank"><i class="fas fa-download"></i> 下载</a>
-          <% } else { %>
-            <span class="btn-download" style="opacity:.5;cursor:default;">待上传</span>
-          <% } %>
-        </div>
-      <% }) %>
-    </div>
   <% } %>
 
   <!-- Related Books -->
