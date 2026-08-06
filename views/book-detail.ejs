@@ -89,7 +89,7 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
 <div id="xianbao-topbar" data-active="reading"></div>
 
 <div class="container">
-  <a href="/" class="back-link">← 返回首页</a>
+  
 
   <!-- Book Header -->
   <div class="book-header">
@@ -115,9 +115,6 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
     </div>
     <div class="book-body">
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
-        <a href="/books/<%= book.id %>/aideep-v2" class="btn-big btn-big-gold">
-          <span style="font-size:1.15rem;">🤖</span> AI助读
-        </a>
         <% if (hasQA && hasQA !== undefined) { %>
           <a href="/books/<%= book.id %>/qa" class="btn-big btn-big-outline">
             <span style="font-size:1.15rem;">❓</span> 问答
