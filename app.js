@@ -6,6 +6,9 @@ const { initialize, getDb } = require('./models/database');
 const { importContent } = require('./scripts/import_content');
 const https = require('https');
 
+// 域名配置（换域名只改这里）
+const MAIN_DOMAIN = process.env.MAIN_DOMAIN || 'https://xianbao.online';
+
 initialize();
 
 const app = express();
@@ -174,7 +177,7 @@ app.get('/books/:id/reader', async (req, res) => {
   const summaryIds = db.prepare("SELECT chapter_id FROM chapter_summaries WHERE chapter_id IN (SELECT id FROM chapters WHERE book_id=?)").all(req.params.id).map(r => r.chapter_id);
   const summaryMap = {};
   summaryIds.forEach(id => { summaryMap[id] = true; });
-  res.render('reader-single', { book, chapters, summaryMap, needUpgrade: !usage.ok });
+  res.render('reader-single', { book, chapters, summaryMap, needUpgrade: !usage.ok, mainDomain: MAIN_DOMAIN });
 });
 
 // ===== API: Chapter JSON data =====
@@ -297,7 +300,7 @@ app.get('/books/:id/aideep', async (req, res) => {
         <p style="font-size:48px;margin-bottom:16px;">🔒</p>
         <p style="font-size:18px;font-weight:600;color:#1f2937;">免费版AI助读次数已用完</p>
         <p style="font-size:14px;margin-top:8px;color:#9ca3af;">升级VIP即可无限使用AI助读功能</p>
-        <a href="https://xianbao.online/vip.html" target="_blank" style="display:inline-block;margin-top:20px;padding:12px 32px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border-radius:100px;text-decoration:none;font-weight:600;">升级VIP →</a>
+        <a href="' + MAIN_DOMAIN + '/vip.html" target="_blank" style="display:inline-block;margin-top:20px;padding:12px 32px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border-radius:100px;text-decoration:none;font-weight:600;">升级VIP →</a>
         <br><a href="/books/${book.id}" style="display:inline-block;margin-top:16px;color:#64748b;font-size:13px;text-decoration:none;">← 返回书籍页</a>
       </div></body></html>
     `);
@@ -362,7 +365,7 @@ app.get('/books/:id/aideep-v2', async (req, res) => {
         <p style="font-size:48px;margin-bottom:16px;">🔒</p>
         <p style="font-size:18px;font-weight:600;color:#1f2937;">免费版AI助读次数已用完</p>
         <p style="font-size:14px;margin-top:8px;color:#9ca3af;">升级VIP即可无限使用AI助读功能</p>
-        <a href="https://xianbao.online/vip.html" target="_blank" style="display:inline-block;margin-top:20px;padding:12px 32px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border-radius:100px;text-decoration:none;font-weight:600;">升级VIP →</a>
+        <a href="' + MAIN_DOMAIN + '/vip.html" target="_blank" style="display:inline-block;margin-top:20px;padding:12px 32px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border-radius:100px;text-decoration:none;font-weight:600;">升级VIP →</a>
         <br><a href="/books/${book.id}" style="display:inline-block;margin-top:16px;color:#64748b;font-size:13px;text-decoration:none;">← 返回书籍页</a>
       </div></body></html>
     `);
