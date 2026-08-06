@@ -109,7 +109,7 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
         <% } else if (hasAIDeepV1) { %>
           <a href="/books/<%= book.id %>/aideep" class="btn-big btn-big-gold" style="padding:10px 18px;font-size:0.95rem">🤖 AI助读</a>
         <% } %>
-        <a href="#" onclick="var el=document.getElementById('download-section');if(el){var tb=document.querySelector('.xianbao-topbar');var off=tb?tb.offsetHeight+8:0;window.scrollTo({top:el.offsetTop-off,behavior:'smooth'});}return false" class="btn-big btn-big-outline" style="padding:10px 18px;font-size:0.95rem">📥 下载</a>
+        <a href="/books/<%= book.id %>/download-html" class="btn-big btn-big-outline" style="padding:10px 18px;font-size:0.95rem">📥 下载</a>
         <a href="/books" class="btn-big btn-big-outline" style="padding:10px 18px;font-size:0.95rem">← 返回首页</a>
       </div>
     </div>
