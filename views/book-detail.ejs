@@ -237,9 +237,9 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
         </div>
         <a href="/books/<%= book.id %>/download-txt" class="btn-download">下载</a>
       </div>
-    <% if (downloads && downloads.length > 0) { %>
+    <% if (downloads && downloads.filter(d => d.file_url).length > 0) { %>
       <h3 style="margin-top:14px"><i class="fas fa-download"></i> 原文附件</h3>
-      <% downloads.forEach(d => { %>
+      <% downloads.filter(d => d.file_url).forEach(d => { %>
         <div class="download-item">
           <div>
             <div class="name"><i class="fas fa-file-pdf" style="color:#C8A65C;margin-right:6px;"></i> <%= d.file_name %></div>
