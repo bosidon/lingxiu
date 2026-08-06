@@ -219,6 +219,11 @@ app.get('/books/:id/download-txt', async (req, res) => {
   const isVip = user.plan === 'vip' || user.role === 'admin';
   const chapters = getDownloadChapters(book.id, isVip, book.is_free);
   if (!chapters.length && !isVip) return res.status(403).send('<h3>该书籍为付费内容</h3><p>升级VIP后可下载全本。<a href="javascript:history.back()">返回</a></p>');
+  // 下载正文：消耗用量（+3/次，VIP 不限）
+  const dlUsage = await incrementReadingUsage(req, 3);
+  if (!dlUsage.ok) {
+    return res.status(403).send('<h3>免费下载次数已用完</h3><p>升级VIP可无限下载全本。<a href="javascript:history.back()">返回</a></p>');
+  }
   const lines = [book.title, '='.repeat(book.title.length || 10), ''];
   chapters.forEach(function(ch, i) {
     lines.push((i+1) + '. ' + ch.title);
