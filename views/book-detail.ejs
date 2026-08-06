@@ -221,9 +221,24 @@ footer{margin-top:60px;border-top:1px solid rgba(255,255,255,.05)}
   <% } %>
 
   <!-- Download Section -->
-  <% if (downloads && downloads.length > 0) { %>
-    <div class="download-section">
-      <h3><i class="fas fa-download"></i> 原文下载</h3>
+  <div class="download-section">
+      <h3><i class="fas fa-download"></i> 书籍下载</h3>
+      <div class="download-item">
+        <div>
+          <div class="name"><i class="fas fa-file-code" style="color:#C8A65C;margin-right:6px;"></i> HTML完整版（目录导航，浏览器/手机直接看）</div>
+          <div class="size">含全部章节 · 免费用户下载免费章节</div>
+        </div>
+        <a href="/books/<%= book.id %>/download-html" class="btn-download">下载</a>
+      </div>
+      <div class="download-item">
+        <div>
+          <div class="name"><i class="fas fa-file-alt" style="color:#C8A65C;margin-right:6px;"></i> TXT纯文本版（可导入其他阅读器）</div>
+          <div class="size">纯文本 · 免费用户下载免费章节</div>
+        </div>
+        <a href="/books/<%= book.id %>/download-txt" class="btn-download">下载</a>
+      </div>
+    <% if (downloads && downloads.length > 0) { %>
+      <h3 style="margin-top:14px"><i class="fas fa-download"></i> 原文附件</h3>
       <% downloads.forEach(d => { %>
         <div class="download-item">
           <div>

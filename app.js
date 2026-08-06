@@ -164,6 +164,75 @@ app.get('/books/:id/download/:downloadId', (req, res) => {
   res.redirect(download.file_url);
 });
 
+// ===== 书籍动态下载（HTML/TXT，无需上传文件） =====
+function getDownloadBook(req) {
+  const db = getDb();
+  return db.prepare("SELECT * FROM books WHERE id=? AND status='published'").get(req.params.id);
+}
+function getDownloadChapters(bookId, isVip, bookIsFree) {
+  const db = getDb();
+  const all = db.prepare("SELECT id, title, content, content_html, sort_order FROM chapters WHERE book_id=? ORDER BY sort_order").all(bookId);
+  return (isVip || bookIsFree == 1) ? all : [];
+}
+async function getReqUser(req) {
+  const token = extractToken(req);
+  if (!token) return null;
+  try {
+    const r = await verifyToken(token);
+    return (r && r.success) ? r.user : null;
+  } catch(e) { return null; }
+}
+function htmlEscape(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// 下载 HTML 全本（目录导航）
+app.get('/books/:id/download-html', async (req, res) => {
+  const user = await getReqUser(req);
+  if (!user) return res.status(401).send('<h3>请先登录后再下载</h3><p><a href="javascript:history.back()">返回</a></p>');
+  const book = getDownloadBook(req);
+  if (!book) return res.status(404).send('书籍不存在');
+  const isVip = user.plan === 'vip' || user.role === 'admin';
+  const chapters = getDownloadChapters(book.id, isVip, book.is_free);
+  if (!chapters.length && !isVip) return res.status(403).send('<h3>该书籍为付费内容</h3><p>升级VIP后可下载全本。<a href="javascript:history.back()">返回</a></p>');
+  const base = (process.env.MAIN_DOMAIN || 'https://xianbao.online').replace(/^https?:\/\//, '');
+  const toc = chapters.map(function(ch, i) {
+    return '<a href="#ch-' + ch.id + '" style="color:#C8A65C;text-decoration:none;font-size:0.9rem;margin-right:12px;white-space:nowrap">' + htmlEscape(ch.title) + '</a>';
+  }).join('');
+  const body = chapters.map(function(ch, i) {
+    const contentHtml = ch.content_html || '<p>' + String(ch.content || '').replace(/\n/g, '<br>') + '</p>';
+    return '<section id="ch-' + ch.id + '" style="margin-bottom:28px"><h2 style="color:#C8A65C;border-bottom:1px solid #ddd;padding-bottom:8px">' + (i+1) + '. ' + htmlEscape(ch.title) + '</h2>' + contentHtml + '</section>';
+  }).join('');
+  const freeNote = isVip ? '' : '<p style="color:#999;font-size:0.85rem;margin-top:16px">免费版下载免费章节（' + chapters.length + ' 章），升级VIP可下载全本。</p>';
+  const html = '<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + htmlEscape(book.title) + ' - 完整版 | 灵修阅读</title><style>body{font-family:"Songti SC","PingFang SC","Microsoft YaHei",serif;max-width:720px;margin:0 auto;padding:16px;color:#2b2b2b;line-height:1.9;background:#fff}h1{text-align:center;color:#333;border-bottom:2px solid #C8A65C;padding-bottom:14px}</style></head><body><h1>' + htmlEscape(book.title) + '</h1><div style="position:sticky;top:0;background:rgba(255,255,255,.97);padding:10px 0;border-bottom:1px solid #eee;margin-bottom:16px;z-index:10"><b style="font-size:0.85rem;color:#999">📑 目录：</b>' + toc + '</div>' + body + freeNote + '<footer style="text-align:center;color:#aaa;font-size:0.8rem;margin-top:40px">' + htmlEscape(book.title) + ' · ' + base + '</footer></body></html>';
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(book.title) + '.html"');
+  res.send(html);
+});
+
+// 下载 TXT 全本
+app.get('/books/:id/download-txt', async (req, res) => {
+  const user = await getReqUser(req);
+  if (!user) return res.status(401).send('<h3>请先登录后再下载</h3><p><a href="javascript:history.back()">返回</a></p>');
+  const book = getDownloadBook(req);
+  if (!book) return res.status(404).send('书籍不存在');
+  const isVip = user.plan === 'vip' || user.role === 'admin';
+  const chapters = getDownloadChapters(book.id, isVip, book.is_free);
+  if (!chapters.length && !isVip) return res.status(403).send('<h3>该书籍为付费内容</h3><p>升级VIP后可下载全本。<a href="javascript:history.back()">返回</a></p>');
+  const lines = [book.title, '='.repeat(book.title.length || 10), ''];
+  chapters.forEach(function(ch, i) {
+    lines.push((i+1) + '. ' + ch.title);
+    lines.push('');
+    const text = (ch.content || '').replace(/<[^>]+>/g, '').replace(/\n\s*\n/g, '\n');
+    lines.push(text);
+    lines.push('');
+  });
+  const txt = lines.join('\n');
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="' + encodeURIComponent(book.title) + '.txt"');
+  res.send(txt);
+});
+
 // ===== READER SINGLE (目录+精读/细读同页) =====
 app.get('/books/:id/reader', async (req, res) => {
   const db = getDb();
